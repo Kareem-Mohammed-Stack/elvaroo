@@ -1,0 +1,490 @@
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  #shopify-section-{{ section.id }} {
+    --orca-quote-accent: {{ section.settings.accent | default: '#C11D1E' }};
+    --orca-quote-speed: {{ section.settings.speed | default: 42 }}s;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign quote_count = 0
+  for block in section.blocks
+    if block.settings.quote != blank
+      assign quote_count = quote_count | plus: 1
+    endif
+  endfor
+-%}
+
+<div class="orca-quotes color-{{ section.settings.color_scheme }} gradient">
+  <div class="section-{{ section.id }}-padding">
+    {%- if section.settings.eyebrow != blank or section.settings.title != blank or section.settings.description != blank -%}
+      <header class="orca-quotes__header page-width">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="orca-quotes__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        {%- if section.settings.title != blank -%}
+          <h2 id="QuotesHeading-{{ section.id }}" class="orca-quotes__title {{ section.settings.heading_size }}">
+            {{ section.settings.title }}
+          </h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank -%}
+          <p class="orca-quotes__description">{{ section.settings.description | escape }}</p>
+        {%- endif -%}
+      </header>
+    {%- endif -%}
+
+    {%- if quote_count > 0 -%}
+      <div class="orca-quotes__marquees" role="region" aria-labelledby="QuotesHeading-{{ section.id }}">
+        <div class="orca-quotes__row orca-quotes__row--ltr">
+          <div class="orca-quotes__track">
+            <div class="orca-quotes__set">
+              {%- for block in section.blocks -%}
+                {%- if block.settings.quote != blank -%}
+                  {% render 'orca-quote-card', block: block, editable: true %}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+            <div class="orca-quotes__set" aria-hidden="true">
+              {%- for block in section.blocks -%}
+                {%- if block.settings.quote != blank -%}
+                  {% render 'orca-quote-card', block: block, duplicate: true %}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        </div>
+
+        <div class="orca-quotes__row orca-quotes__row--rtl">
+          <div class="orca-quotes__track">
+            <div class="orca-quotes__set">
+              {%- for block in section.blocks reversed -%}
+                {%- if block.settings.quote != blank -%}
+                  {% render 'orca-quote-card', block: block, duplicate: true %}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+            <div class="orca-quotes__set" aria-hidden="true">
+              {%- for block in section.blocks reversed -%}
+                {%- if block.settings.quote != blank -%}
+                  {% render 'orca-quote-card', block: block, duplicate: true %}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .orca-quotes__header {
+    max-width: 46rem;
+    margin: 0 auto 3.2rem;
+    text-align: center;
+  }
+
+  .orca-quotes__eyebrow {
+    display: block;
+    margin: 0 0 0.8rem;
+    color: var(--orca-quote-accent, #c11d1e);
+    font-size: 1.2rem;
+    font-weight: 650;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .orca-quotes__title {
+    margin: 0;
+    letter-spacing: -0.04em;
+  }
+
+  .orca-quotes__description {
+    margin: 1rem 0 0;
+    color: rgba(var(--color-foreground), 0.62);
+    font-size: 1.6rem;
+    line-height: 1.5;
+  }
+
+  .orca-quotes__marquees {
+    display: grid;
+    gap: 1.4rem;
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  .orca-quotes__row {
+    overflow: hidden;
+  }
+
+  .orca-quotes__track {
+    display: flex;
+    width: max-content;
+    animation: orca-quotes-marquee var(--orca-quote-speed, 42s) linear infinite;
+    will-change: transform;
+  }
+
+  .orca-quotes__row--rtl .orca-quotes__track {
+    animation-name: orca-quotes-marquee-reverse;
+  }
+
+  .orca-quotes__row:hover .orca-quotes__track,
+  .orca-quotes__row:focus-within .orca-quotes__track {
+    animation-play-state: paused;
+  }
+
+  .orca-quotes__set {
+    display: flex;
+    gap: 1.4rem;
+    padding-right: 1.4rem;
+  }
+
+  .orca-quote {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    width: min(78vw, 34rem);
+    padding: 2rem;
+    border: 1px solid rgba(var(--color-foreground), 0.08);
+    border-radius: 22px;
+    background: rgb(var(--color-background));
+    box-shadow: 0 12px 30px rgba(var(--color-foreground), 0.05);
+  }
+
+  .orca-quote__stars {
+    display: flex;
+    gap: 0.2rem;
+    color: var(--orca-quote-accent, #c11d1e);
+  }
+
+  .orca-quote__star {
+    display: inline-flex;
+  }
+
+  .orca-quote__star--empty {
+    opacity: 0.22;
+  }
+
+  .orca-quote__text {
+    margin: 0;
+    font-size: 1.6rem;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+  }
+
+  .orca-quote__person {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: auto;
+  }
+
+  .orca-quote__avatar {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 999px;
+    object-fit: cover;
+  }
+
+  .orca-quote__avatar--fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--orca-quote-accent, #c11d1e);
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  .orca-quote__meta {
+    display: grid;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  .orca-quote__name {
+    font-size: 1.4rem;
+    font-weight: 650;
+  }
+
+  .orca-quote__role {
+    color: rgba(var(--color-foreground), 0.55);
+    font-size: 1.3rem;
+  }
+
+  @keyframes orca-quotes-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes orca-quotes-marquee-reverse {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .orca-quote {
+      width: 38rem;
+      padding: 2.4rem;
+    }
+
+    .orca-quote__text {
+      font-size: 1.7rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orca-quotes__marquees {
+      mask-image: none;
+      -webkit-mask-image: none;
+      gap: 1.6rem;
+      padding: 0 1.5rem;
+    }
+
+    .orca-quotes__row {
+      overflow: visible;
+    }
+
+    .orca-quotes__track {
+      display: contents;
+      animation: none;
+    }
+
+    .orca-quotes__set {
+      display: contents;
+    }
+
+    .orca-quotes__set[aria-hidden='true'] {
+      display: none;
+    }
+
+    .orca-quotes__row--ltr,
+    .orca-quotes__row--rtl {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.2rem;
+    }
+
+    .orca-quote {
+      width: 100%;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.orca-testimonials.name",
+  "tag": "section",
+  "class": "section section-orca-testimonials",
+  "max_blocks": 16,
+  "disabled_on": {
+    "groups": ["header", "custom.popup"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Reviews"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Heading",
+      "default": "Loved by customers"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Real notes from people who shop with us."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_size.options__2.label"
+        },
+        {
+          "value": "h0",
+          "label": "t:sections.all.heading_size.options__3.label"
+        }
+      ],
+      "default": "h1",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 18,
+      "max": 80,
+      "step": 2,
+      "unit": "s",
+      "label": "Marquee duration",
+      "default": 42
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "background-1"
+    },
+    {
+      "type": "color",
+      "id": "accent",
+      "label": "Accent",
+      "default": "#C11D1E"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 64
+    }
+  ],
+  "blocks": [
+    {
+      "type": "quote",
+      "name": "t:sections.orca-testimonials.blocks.quote.name",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Arrived faster than I expected and packed carefully. I’ll order again."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Name",
+          "default": "Maya R."
+        },
+        {
+          "type": "text",
+          "id": "role",
+          "label": "Detail",
+          "default": "Verified buyer"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Photo"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Rating",
+          "default": 5
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.orca-testimonials.presets.name",
+      "blocks": [
+        {
+          "type": "quote",
+          "settings": {
+            "quote": "Arrived faster than I expected and packed carefully. I’ll order again.",
+            "author": "Maya R.",
+            "role": "Verified buyer",
+            "rating": 5
+          }
+        },
+        {
+          "type": "quote",
+          "settings": {
+            "quote": "The site made it easy to find what I needed. Checkout was straightforward.",
+            "author": "James L.",
+            "role": "Repeat customer",
+            "rating": 5
+          }
+        },
+        {
+          "type": "quote",
+          "settings": {
+            "quote": "Support answered the same day and the exchange was simple.",
+            "author": "Priya S.",
+            "role": "Verified buyer",
+            "rating": 5
+          }
+        },
+        {
+          "type": "quote",
+          "settings": {
+            "quote": "Quality matched the photos. Feels like a store I can trust.",
+            "author": "Daniel K.",
+            "role": "Verified buyer",
+            "rating": 5
+          }
+        },
+        {
+          "type": "quote",
+          "settings": {
+            "quote": "Bought a gift and they helped me get it there on time.",
+            "author": "Elena M.",
+            "role": "Verified buyer",
+            "rating": 5
+          }
+        },
+        {
+          "type": "quote",
+          "settings": {
+            "quote": "Clear policies, no surprises. That’s rare online.",
+            "author": "Chris T.",
+            "role": "Repeat customer",
+            "rating": 5
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

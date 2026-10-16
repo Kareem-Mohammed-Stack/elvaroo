@@ -1,0 +1,122 @@
+{% comment %}
+  PDP Trust Badge: "Loved by 500+ customers" and "14 Day Money Back Guarantee"
+{% endcomment %}
+
+<div class="pdp-trust-badge">
+  <div class="pdp-trust-badge__rating">
+    <div class="pdp-trust-badge__stars" aria-label="5 out of 5 stars">
+      {% for i in (1..5) %}
+        <svg
+          class="pdp-trust-badge__star"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="22"
+          height="22"
+          fill="#be9a56"
+          aria-hidden="true"
+        >
+          <path d="M12 1.5l3.26 6.6 7.29 1.06-5.27 5.14 1.24 7.26L12 17.77l-6.52 3.79 1.24-7.26L1.45 9.16l7.29-1.06L12 1.5z"/>
+        </svg>
+      {% endfor %}
+    </div>
+    <div class="pdp-trust-badge__title">Loved by 500+ customers.</div>
+  </div>
+
+  <div class="pdp-trust-badge__guarantee">
+    <img
+      src="{{ 'shield-14-guarantee.png' | asset_url }}"
+      alt="14 Day Money Back Guarantee"
+      class="pdp-trust-badge__shield"
+      width="44"
+      height="48"
+      loading="lazy"
+    >
+    <span class="pdp-trust-badge__guarantee-text">14 Day Money Back Guarantee</span>
+  </div>
+</div>
+
+<style>
+  .pdp-trust-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 2.2rem 0 1.6rem;
+    width: 100%;
+  }
+
+  .pdp-trust-badge__rating {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .pdp-trust-badge__stars {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .pdp-trust-badge__star {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .pdp-trust-badge__title {
+    font-family: Georgia, Garamond, "Times New Roman", Times, serif;
+    font-size: clamp(1.9rem, 4.5vw, 2.3rem);
+    font-weight: 500;
+    color: #1a1a1a;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    margin: 0;
+  }
+
+  .pdp-trust-badge__guarantee {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+  }
+
+  .pdp-trust-badge__shield {
+    display: block;
+    width: clamp(38px, 9vw, 44px);
+    height: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .pdp-trust-badge__guarantee-text {
+    font-family: Georgia, Garamond, "Times New Roman", Times, serif;
+    font-size: clamp(1.9rem, 4.5vw, 2.3rem);
+    font-weight: 500;
+    color: #1a1a1a;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+
+  @media screen and (max-width: 749px) {
+    .pdp-trust-badge {
+      margin: 1.8rem 0 1.4rem;
+    }
+    .pdp-trust-badge__rating {
+      gap: 0.5rem;
+      margin-bottom: 1.4rem;
+    }
+    .pdp-trust-badge__star {
+      width: 19px;
+      height: 19px;
+    }
+    .pdp-trust-badge__guarantee {
+      gap: 0.9rem;
+    }
+  }
+</style>

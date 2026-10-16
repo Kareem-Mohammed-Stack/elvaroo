@@ -1,0 +1,499 @@
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  #shopify-section-{{ section.id }} {
+    --orca-faq-accent: {{ section.settings.accent | default: '#C11D1E' }};
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="orca-faq color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width isolate section-{{ section.id }}-padding">
+    {%- if section.settings.eyebrow != blank or section.settings.title != blank or section.settings.description != blank -%}
+      <header class="orca-faq__header">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="orca-faq__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        {%- if section.settings.title != blank -%}
+          <h2 id="FaqHeading-{{ section.id }}" class="orca-faq__title {{ section.settings.heading_size }}">
+            {{ section.settings.title }}
+          </h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank -%}
+          <p class="orca-faq__description">{{ section.settings.description | escape }}</p>
+        {%- endif -%}
+      </header>
+    {%- endif -%}
+
+    <orca-faq-list class="orca-faq__list">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.question != blank -%}
+          <details
+            class="orca-faq__item"
+            id="Faq-{{ section.id }}-{{ block.id }}"
+            {% if section.settings.open_first and forloop.first %}open{% endif %}
+            {{ block.shopify_attributes }}
+          >
+            <summary class="orca-faq__summary">
+              <span class="orca-faq__question">{{ block.settings.question | escape }}</span>
+              <span class="orca-faq__icon" aria-hidden="true"></span>
+            </summary>
+            <div class="orca-faq__panel">
+              <div class="orca-faq__answer rte">
+                {{ block.settings.answer }}
+              </div>
+            </div>
+          </details>
+        {%- endif -%}
+      {%- endfor -%}
+    </orca-faq-list>
+  </div>
+</div>
+
+{% stylesheet %}
+  .orca-faq__header {
+    max-width: 46rem;
+    margin: 0 auto 3.2rem;
+    text-align: center;
+  }
+
+  .orca-faq__eyebrow {
+    display: block;
+    margin: 0 0 0.8rem;
+    color: var(--orca-faq-accent, #c11d1e);
+    font-size: 1.2rem;
+    font-weight: 650;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .orca-faq__title {
+    margin: 0;
+    letter-spacing: -0.04em;
+  }
+
+  .orca-faq__description {
+    margin: 1rem 0 0;
+    color: rgba(var(--color-foreground), 0.62);
+    font-size: 1.6rem;
+    line-height: 1.5;
+  }
+
+  .orca-faq__list {
+    display: grid;
+    gap: 1.2rem;
+    max-width: 78rem;
+    margin: 0 auto;
+  }
+
+  .orca-faq__item {
+    overflow: hidden;
+    border: 1px solid rgba(var(--color-foreground), 0.08);
+    border-radius: 20px;
+    background: rgb(var(--color-background));
+    box-shadow: 0 10px 28px rgba(var(--color-foreground), 0.04);
+    transition: border-color 280ms ease, box-shadow 280ms ease;
+  }
+
+  .orca-faq__item[open],
+  .orca-faq__item:hover {
+    border-color: rgba(var(--color-foreground), 0.14);
+    box-shadow: 0 16px 36px rgba(var(--color-foreground), 0.07);
+  }
+
+  .orca-faq__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.6rem;
+    padding: 1.8rem 2rem;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .orca-faq__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .orca-faq__question {
+    font-size: 1.7rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    line-height: 1.35;
+  }
+
+  .orca-faq__icon {
+    position: relative;
+    flex: 0 0 auto;
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 999px;
+    background: rgba(var(--color-foreground), 0.05);
+    transition: background 280ms ease, transform 280ms ease;
+  }
+
+  .orca-faq__icon::before,
+  .orca-faq__icon::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background: currentColor;
+    border-radius: 99px;
+    transform: translate(-50%, -50%);
+    transition: transform 360ms cubic-bezier(0.4, 0, 0.2, 1), opacity 280ms ease;
+  }
+
+  .orca-faq__icon::before {
+    width: 1.2rem;
+    height: 1.5px;
+  }
+
+  .orca-faq__icon::after {
+    width: 1.5px;
+    height: 1.2rem;
+  }
+
+  .orca-faq__item[open] .orca-faq__icon,
+  .orca-faq-list.is-ready .orca-faq__item.is-open .orca-faq__icon {
+    background: var(--orca-faq-accent, #c11d1e);
+    color: #fff;
+    transform: rotate(90deg);
+  }
+
+  .orca-faq__item[open] .orca-faq__icon::after,
+  .orca-faq-list.is-ready .orca-faq__item.is-open .orca-faq__icon::after {
+    opacity: 0;
+    transform: translate(-50%, -50%) scaleY(0);
+  }
+
+  .orca-faq-list.is-ready .orca-faq__item[open]:not(.is-open) .orca-faq__icon {
+    background: rgba(var(--color-foreground), 0.05);
+    color: inherit;
+    transform: none;
+  }
+
+  .orca-faq-list.is-ready .orca-faq__item[open]:not(.is-open) .orca-faq__icon::after {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+
+  .orca-faq__panel {
+    overflow: hidden;
+  }
+
+  .orca-faq__answer {
+    padding: 0 2rem 2rem;
+    color: rgba(var(--color-foreground), 0.68);
+    font-size: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .orca-faq__answer > *:first-child {
+    margin-top: 0;
+  }
+
+  .orca-faq__answer > *:last-child {
+    margin-bottom: 0;
+  }
+
+  .orca-faq-list.is-ready .orca-faq__panel {
+    height: 0;
+    transition: height 420ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @media screen and (min-width: 750px) {
+    .orca-faq__summary {
+      padding: 2.2rem 2.4rem;
+    }
+
+    .orca-faq__question {
+      font-size: 1.9rem;
+    }
+
+    .orca-faq__answer {
+      padding: 0 2.4rem 2.4rem;
+      font-size: 1.6rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orca-faq-list.is-ready .orca-faq__panel,
+    .orca-faq__icon,
+    .orca-faq__icon::before,
+    .orca-faq__icon::after,
+    .orca-faq__item {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('orca-faq-list')) {
+    customElements.define(
+      'orca-faq-list',
+      class OrcaFaqList extends HTMLElement {
+        connectedCallback() {
+          this.reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          this.items = Array.from(this.querySelectorAll('details'));
+          this.onSummaryClick = this.onSummaryClick.bind(this);
+
+          this.items.forEach((item) => {
+            const panel = item.querySelector('.orca-faq__panel');
+            const summary = item.querySelector('summary');
+            if (!panel || !summary) return;
+            if (item.open) {
+              item.classList.add('is-open');
+              panel.style.height = 'auto';
+            }
+            summary.addEventListener('click', this.onSummaryClick, { capture: true });
+          });
+          this.classList.add('is-ready');
+        }
+
+        disconnectedCallback() {
+          if (!this.items) return;
+          this.items.forEach((item) => {
+            const summary = item.querySelector('summary');
+            if (summary) summary.removeEventListener('click', this.onSummaryClick, { capture: true });
+          });
+        }
+
+        onSummaryClick(event) {
+          const item = event.currentTarget.closest('details');
+          if (!(item instanceof HTMLDetailsElement) || !this.contains(item)) return;
+          event.preventDefault();
+          event.stopPropagation();
+
+          if (item.open) {
+            this.collapse(item);
+            return;
+          }
+
+          this.items.forEach((other) => {
+            if (other !== item && other.open) this.collapse(other);
+          });
+          this.expand(item);
+        }
+
+        panelHeight(item) {
+          const answer = item.querySelector('.orca-faq__answer');
+          return answer ? answer.scrollHeight : 0;
+        }
+
+        expand(item) {
+          const panel = item.querySelector('.orca-faq__panel');
+          if (!panel) return;
+          item.open = true;
+          item.classList.add('is-open');
+          if (this.reduceMotion) {
+            panel.style.height = 'auto';
+            return;
+          }
+          panel.style.height = '0px';
+          panel.offsetHeight;
+          panel.style.height = `${this.panelHeight(item)}px`;
+          const finish = (event) => {
+            if (event && event.propertyName !== 'height') return;
+            panel.style.height = 'auto';
+            panel.removeEventListener('transitionend', finish);
+          };
+          panel.addEventListener('transitionend', finish);
+        }
+
+        collapse(item) {
+          const panel = item.querySelector('.orca-faq__panel');
+          if (!panel) return;
+          item.classList.remove('is-open');
+          const startHeight = panel.style.height === 'auto' ? this.panelHeight(item) : panel.scrollHeight;
+          if (this.reduceMotion || startHeight < 1) {
+            item.open = false;
+            panel.style.height = '0px';
+            return;
+          }
+          panel.style.height = `${startHeight}px`;
+          panel.offsetHeight;
+          panel.style.height = '0px';
+          const finish = (event) => {
+            if (event && event.propertyName !== 'height') return;
+            item.open = false;
+            panel.removeEventListener('transitionend', finish);
+          };
+          panel.addEventListener('transitionend', finish);
+        }
+      }
+    );
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.orca-faq.name",
+  "tag": "section",
+  "class": "section section-orca-faq",
+  "max_blocks": 16,
+  "disabled_on": {
+    "groups": ["header", "custom.popup"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Help"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Heading",
+      "default": "Questions, answered"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Shipping, returns, and ordering — the essentials."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_size.options__2.label"
+        },
+        {
+          "value": "h0",
+          "label": "t:sections.all.heading_size.options__3.label"
+        }
+      ],
+      "default": "h1",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_first",
+      "label": "Open first question",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "background-1"
+    },
+    {
+      "type": "color",
+      "id": "accent",
+      "label": "Accent",
+      "default": "#C11D1E"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "t:sections.orca-faq.blocks.question.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "How long does shipping take?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Shipping takes around 14 business days. All orders include tracked shipping.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.orca-faq.presets.name",
+      "blocks": [
+        {
+          "type": "question",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>Shipping takes around 14 business days. All orders include tracked shipping.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>Unused items can be returned within 30 days of delivery. Start a return from your order confirmation email or contact us and we’ll walk you through it.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "Do you ship internationally?",
+            "answer": "<p>Yes. We deliver to most countries. Duties and taxes may apply depending on your destination and will be shown at checkout when available.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "How do I track my order?",
+            "answer": "<p>A tracking link is emailed as soon as your order ships. You can also find it in your account under order history.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "Which payment methods do you accept?",
+            "answer": "<p>We accept major cards, Shop Pay, PayPal, Apple Pay, and Google Pay. Available methods can vary by country.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "Can I change or cancel an order?",
+            "answer": "<p>If the order hasn’t shipped yet, contact us and we’ll do our best to update or cancel it. Once it’s on the way, you’ll need to wait for delivery or start a return.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

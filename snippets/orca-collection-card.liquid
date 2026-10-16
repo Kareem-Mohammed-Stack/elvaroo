@@ -1,0 +1,112 @@
+{% doc %}
+  Collection card with stage graphic, cutout product on pedestal, title, and count.
+
+  @param {object} [card_collection] - Collection to render
+  @param {number} [index] - Card index for staggered decoration
+
+  @example
+  {% render 'orca-collection-card', card_collection: collection, index: forloop.index %}
+{% enddoc %}
+
+{%- liquid
+  assign idx = index | default: 1
+  assign mod_idx = idx | minus: 1 | modulo: 6 | plus: 1
+
+  assign fallback_title = 'Collection'
+  assign fallback_count = '8 products'
+  assign fallback_class = 'orca-cat-card__product--straightener'
+  assign fallback_img = 'orca-cutout-straightener.png'
+  assign fallback_url = '/collections/all'
+
+  case mod_idx
+    when 1
+      assign fallback_title = 'Beauty & Hair'
+      assign fallback_count = '8 products'
+      assign fallback_class = 'orca-cat-card__product--straightener'
+      assign fallback_img = 'orca-cutout-straightener.png'
+    when 2
+      assign fallback_title = 'Home & Living'
+      assign fallback_count = '22 products'
+      assign fallback_class = 'orca-cat-card__product--necklace'
+      assign fallback_img = 'orca-cutout-necklace.png'
+    when 3
+      assign fallback_title = 'Kids & Baby'
+      assign fallback_count = '8 products'
+      assign fallback_class = 'orca-cat-card__product--kids-figurine'
+      assign fallback_img = 'orca-cutout-kids-figurine.png'
+    when 4
+      assign fallback_title = 'Pet Care'
+      assign fallback_count = '8 products'
+      assign fallback_class = 'orca-cat-card__product--petbed'
+      assign fallback_img = 'orca-cutout-petbed.png'
+    when 5
+      assign fallback_title = 'Wellness'
+      assign fallback_count = '15 products'
+      assign fallback_class = 'orca-cat-card__product--pillow'
+      assign fallback_img = 'orca-cutout-pillow.png'
+    when 6
+      assign fallback_title = 'Home & Living'
+      assign fallback_count = '22 products'
+      assign fallback_class = 'orca-cat-card__product--blower'
+      assign fallback_img = 'orca-cutout-blower.png'
+  endcase
+
+  if card_collection != blank and card_collection.title != blank
+    assign title = card_collection.title
+    assign count = 'sections.collection_list.product_count' | t: count: card_collection.all_products_count
+    assign card_url = card_collection.url
+    assign media = card_collection.featured_image
+    if media == blank and card_collection.products.first.featured_image != blank
+      assign media = card_collection.products.first.featured_image
+    endif
+  else
+    assign title = fallback_title
+    assign count = fallback_count
+    assign card_url = fallback_url
+    assign media = blank
+  endif
+-%}
+
+<a href="{{ card_url }}" class="orca-cat-card">
+  <span class="orca-cat-card__scene" style="background-image: url('{{ 'orca-collection-stage.png' | asset_url }}');" aria-hidden="true"></span>
+  <span class="orca-cat-card__overlay" aria-hidden="true"></span>
+  <span class="orca-cat-card__stage">
+    {%- if media != blank -%}
+      <span class="orca-cat-card__product orca-cat-card__product--photo">
+        <span class="orca-cat-card__figure">
+          {{
+            media
+            | image_url: width: 800
+            | image_tag:
+              class: 'orca-cat-card__image',
+              widths: '400, 600, 800',
+              sizes: '(min-width: 990px) 28vw, (min-width: 750px) 44vw, 86vw',
+              loading: 'lazy',
+              alt: title
+          }}
+        </span>
+      </span>
+    {%- else -%}
+      <span class="orca-cat-card__product {{ fallback_class }}">
+        <span class="orca-cat-card__figure">
+          <img
+            src="{{ fallback_img | asset_url }}"
+            alt=""
+            class="orca-cat-card__image"
+            loading="lazy"
+            decoding="async"
+          >
+        </span>
+      </span>
+    {%- endif -%}
+  </span>
+  <span class="orca-cat-card__footer">
+    <span class="orca-cat-card__copy">
+      <span class="orca-cat-card__title">{{ title | escape }}</span>
+      <span class="orca-cat-card__count">{{ count }}</span>
+    </span>
+    <span class="orca-cat-card__go" aria-hidden="true">
+      {% render 'orca-icon', icon: 'arrow-right' %}
+    </span>
+  </span>
+</a>
